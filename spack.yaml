@@ -1,0 +1,82 @@
+#***********************************************************************
+#                   GNU Lesser General Public License
+#
+# This file is part of the GFDL FRE NetCDF tools package (FRE-NCTools).
+#
+# FRE-NCTools is free software: you can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at
+# your option) any later version.
+#
+# FRE-NCTools is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with FRE-NCTools.  If not, see
+# <http://www.gnu.org/licenses/>.
+#***********************************************************************
+# Ryan Mulhall 2023
+# spack environment config to generate a dockerfile for the fre-nctools ci image.
+# To generate a new dockerfile:
+#
+#     <clone the spack repo if not already available>
+#     source spack/share/spack/setup-env.sh (setup scripts for most shells are also available)
+#     <cd to this repo>
+#     <fill in the /path/to/ in spack.yaml with the path you cloned the repo in>
+#     spack env create fnct-container-env spack.yaml
+#     spack env activate fnct-container-env
+#     spack containerize > Dockerfile
+#
+# For versions, spack packages will use the default (usually the newest but depends on whats compatible)
+# Images should be tagged with gcc version used
+spack:
+  specs:
+  - gcc
+  - mpich
+  - netcdf-c
+  - netcdf-fortran
+  - nccmp
+  concretizer:
+    unify: true
+  packages:
+    all:
+      compiler: [ gcc ]
+  config:
+    template_dirs:
+      - /path/to/fre-nctools-container/template
+  # container specific options
+  container:
+    format: docker
+    template: Dockerfile.template
+    images:
+      os: "rockylinux:9"
+      spack: develop
+    # labels for final image
+    labels:
+      maintainer: "Seth Underwood <Seth.Underwood@noaa.gov>"
+      copyright: "2021, 2022, 2023 GFDL"
+      license: "LGPL v3+"
+      gov.noaa.gfdl.version: "5.0.0"
+      vendor: "Geophysical Fluid Dynamics Laboratory"
+      gov.noaa.gfdl.release-date: "2024-01-10"
+    # TODO should strip binaries for size if possible
+    # currently causes linker issues with libgcc when true
+    strip: false
+    # Additional packages that are needed at (ci) runtime
+    # this is anything that doesn't need to be built from source
+    # pip installs would be added in the template instead
+    os_packages:
+      final:
+      - autoconf
+      - libtool
+      - make
+      - bats
+      - git
+      - libgomp
+      - python3
+      - python3-numpy
+      - python3-pip
+      - python3-pytest
+

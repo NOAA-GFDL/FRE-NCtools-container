@@ -1,9 +1,15 @@
 # FRE-NCtools-container
 
-Recipefile and associated container used for the CI testing of the 
+Spack config and generated Dockerfile for container used for the CI testing of the
 [FRE-NCtools repository](github.com/NOAA-GFDL/FRE-NCtools). Container is based
-on Ubuntu Focal and includes all the required libraries for building and running
+on Rocky Linux 9 and includes all the required libraries for building and running
 the FRE-NCtools test suite.
+
+The Dockerfile is meant to be auto-generated with `spack containerize` via the provided
+yaml and template files. Instructions to do so are provided in `spack.yaml`.
+
+Any modifications should be made to these files, `spack.yaml` and `template/Dockerfile.template`
+instead of the resulting Dockerfile (which should then be generated and added accordingly).
 
 # Support
 
